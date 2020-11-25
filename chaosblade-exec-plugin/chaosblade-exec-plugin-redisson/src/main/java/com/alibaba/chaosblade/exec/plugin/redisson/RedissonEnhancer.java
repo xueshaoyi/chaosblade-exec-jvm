@@ -45,9 +45,11 @@ public class RedissonEnhancer extends BeforeEnhancer {
 			            methodArguments != null ? methodArguments.length : null);
 			return null;
 		}
+		LOGGER.info("method Arguments {}", methodArguments.toString());
 
 
 		Object command = methodArguments[3];
+		LOGGER.info("method command {}", ReflectUtil.invokeMethod(command, "getName", new Object[0], false));
 		boolean redisCommand =
 				ReflectUtil.isAssignableFrom(
 						classLoader, command.getClass(), "org.redisson.client.protocol.RedisCommand");
