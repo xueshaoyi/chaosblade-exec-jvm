@@ -48,7 +48,7 @@ public class FeignEnhancer extends BeforeEnhancer {
 		String urlPath = null;
 		Annotation[] declaredAnnotations = rootMethod.getDeclaredAnnotations();
 		if (declaredAnnotations != null && declaredAnnotations.length > 0) {
-			Annotation annotation = declaredAnnotations[0];
+			Object annotation = declaredAnnotations[0];
 			urlPath = ReflectUtil.invokeMethod(annotation, "value");
 			LOGGER.info("annotation s is {}, value {}", annotation.toString(), urlPath);
 
