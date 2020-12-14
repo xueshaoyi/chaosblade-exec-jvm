@@ -26,13 +26,13 @@ public class FeignEnhancer extends BeforeEnhancer {
 	@Override
 	public EnhancerModel doBeforeAdvice(ClassLoader classLoader, String className, Object object, Method method,
 	                                    Object[] methodArguments) throws Exception {
-		LOGGER.info("doBefore Feign {}", methodArguments);
+		LOGGER.info("doBefore method {}, object {}", method, object);
 		if (methodArguments == null || methodArguments.length != 3) {
 			LOGGER.info("The necessary parameters is null or length is not equal 3, {}",
 			            methodArguments != null ? methodArguments.length : null);
 			return null;
 		}
-		Object proxy = methodArguments[0];
+		Object proxy = ReflectUtil.getFieldValue(object, "target", true);
 		Object methodMethod = methodArguments[1];
 		boolean isMethod = ReflectUtil.isAssignableFrom(classLoader, methodMethod.getClass(),
 		                                                           "java.lang.reflect.Method");
@@ -44,7 +44,7 @@ public class FeignEnhancer extends BeforeEnhancer {
 		Method rootMethod = ReflectUtil.invokeMethod(methodMethod, "getRoot");
 		LOGGER.info("feign root Method {}", rootMethod);
 		String methodName = rootMethod.getName();
-		String methodClassName = rootMethod.getClass().getName();
+		String methodClassName = rootMethod.getClass().getSimpleName();
 		String urlPath = null;
 		Annotation[] declaredAnnotations = rootMethod.getDeclaredAnnotations();
 		if (declaredAnnotations != null && declaredAnnotations.length > 0) {
@@ -60,9 +60,11 @@ public class FeignEnhancer extends BeforeEnhancer {
 
 		}
 		LOGGER.info("urlPath {}, methodName {}, className", urlPath, methodName, methodClassName);
+		Object type = ReflectUtil.invokeMethod(proxy, "type");
+		String simpleName = ReflectUtil.invokeMethod(type, "getName");
 		String name = ReflectUtil.invokeMethod(proxy, "name");
 		String url = ReflectUtil.invokeMethod(proxy, "url");
-		LOGGER.info("name {}, url {}", name, url);
+		LOGGER.info("simpleName {}, name {}, url {}",simpleName, name, url);
 		MatcherModel matcherModel = new MatcherModel();
 		if (StringUtils.isNotEmpty(methodName)) {
 			matcherModel.add(FeignConstant.METHOD_MATCHER_NAME, methodName.toLowerCase());
