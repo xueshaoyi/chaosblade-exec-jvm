@@ -27,6 +27,6 @@ public class FeignPlugin implements Plugin {
 
 	@Override
 	public Enhancer getEnhancer() {
-		return null;
+		return new FeignEnhancer();
 	}
 }
