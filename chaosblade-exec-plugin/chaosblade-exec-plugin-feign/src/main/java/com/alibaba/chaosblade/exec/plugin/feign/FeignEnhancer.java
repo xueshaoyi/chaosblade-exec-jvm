@@ -43,10 +43,14 @@ public class FeignEnhancer extends BeforeEnhancer {
 		String methodClassName = rootMethod.getClass().getName();
 		String urlPath = null;
 		Annotation[] declaredAnnotations = rootMethod.getDeclaredAnnotations();
-		LOGGER.info("Annotations size {}", declaredAnnotations.length);
+		LOGGER.info("Annotations size {}, methodName {}, className", declaredAnnotations.length, methodName, methodClassName);
 		if (declaredAnnotations != null && declaredAnnotations.length > 0) {
 			Annotation annotation = declaredAnnotations[0];
 			LOGGER.info("annotation s is {}", annotation.toString());
+			String annotationStr = annotation.toString();
+			String[] values = annotationStr.split("value")[1].split("\"");
+			LOGGER.info("values is {}", values);
+
 		}
 
 		MatcherModel matcherModel = new MatcherModel();
