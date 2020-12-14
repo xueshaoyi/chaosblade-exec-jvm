@@ -23,6 +23,7 @@ public class FeignEnhancer extends BeforeEnhancer {
 	@Override
 	public EnhancerModel doBeforeAdvice(ClassLoader classLoader, String className, Object object, Method method,
 	                                    Object[] methodArguments) throws Exception {
+		LOGGER.info("doBefore Feign {}", methodArguments);
 		if (methodArguments == null || methodArguments.length != 3) {
 			LOGGER.info("The necessary parameters is null or length is not equal 3, {}",
 			            methodArguments != null ? methodArguments.length : null);
@@ -37,10 +38,12 @@ public class FeignEnhancer extends BeforeEnhancer {
 		}
 
 		Method rootMethod = ReflectUtil.invokeMethod(methodMethod, "getRoot");
+		LOGGER.info("feign root Method {}", rootMethod);
 		String methodName = rootMethod.getName();
 		String methodClassName = rootMethod.getClass().getName();
 		String urlPath = null;
 		Annotation[] declaredAnnotations = rootMethod.getDeclaredAnnotations();
+		LOGGER.info("Annotations size {}", declaredAnnotations.length);
 		if (declaredAnnotations != null && declaredAnnotations.length > 0) {
 			Annotation annotation = declaredAnnotations[0];
 			LOGGER.info("annotation s is {}", annotation.toString());
