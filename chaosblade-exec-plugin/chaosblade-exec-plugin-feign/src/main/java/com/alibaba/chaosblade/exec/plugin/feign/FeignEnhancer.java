@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author xueshaoyi
@@ -19,6 +21,7 @@ import java.lang.reflect.Method;
 public class FeignEnhancer extends BeforeEnhancer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeignEnhancer.class);
+	private static final String REGEX = "\\/(.*?)(?=\")";
 
 	@Override
 	public EnhancerModel doBeforeAdvice(ClassLoader classLoader, String className, Object object, Method method,
@@ -29,6 +32,7 @@ public class FeignEnhancer extends BeforeEnhancer {
 			            methodArguments != null ? methodArguments.length : null);
 			return null;
 		}
+		Object proxy = methodArguments[0];
 		Object methodMethod = methodArguments[1];
 		boolean isMethod = ReflectUtil.isAssignableFrom(classLoader, methodMethod.getClass(),
 		                                                           "java.lang.reflect.Method");
@@ -43,22 +47,31 @@ public class FeignEnhancer extends BeforeEnhancer {
 		String methodClassName = rootMethod.getClass().getName();
 		String urlPath = null;
 		Annotation[] declaredAnnotations = rootMethod.getDeclaredAnnotations();
-		LOGGER.info("Annotations size {}, methodName {}, className", declaredAnnotations.length, methodName, methodClassName);
 		if (declaredAnnotations != null && declaredAnnotations.length > 0) {
 			Annotation annotation = declaredAnnotations[0];
 			LOGGER.info("annotation s is {}", annotation.toString());
 			String annotationStr = annotation.toString();
-			String[] values = annotationStr.split("value")[1].split("\"");
-			LOGGER.info("values is {}", values);
+			Pattern pattern = Pattern.compile(REGEX);
+			Matcher m = pattern.matcher(annotationStr);
+			while (m.find()) {
+				urlPath = m.group(0);
+			}
+			LOGGER.info("values is {}", urlPath);
 
 		}
-
+		LOGGER.info("urlPath {}, methodName {}, className", urlPath, methodName, methodClassName);
+		String name = ReflectUtil.invokeMethod(proxy, "name");
+		String url = ReflectUtil.invokeMethod(proxy, "url");
+		LOGGER.info("name {}, url {}", name, url);
 		MatcherModel matcherModel = new MatcherModel();
 		if (StringUtils.isNotEmpty(methodName)) {
 			matcherModel.add(FeignConstant.METHOD_MATCHER_NAME, methodName.toLowerCase());
 		}
 		if (StringUtils.isNotEmpty(methodClassName)) {
 			matcherModel.add(FeignConstant.CLASS_MATCHER_NAME, methodClassName);
+		}
+		if (StringUtils.isNotEmpty(urlPath)) {
+			matcherModel.add(FeignConstant.PATH_MATCHER_NAME, urlPath);
 		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("redisson matchers: {}", JsonUtil.writer().writeValueAsString(matcherModel));
