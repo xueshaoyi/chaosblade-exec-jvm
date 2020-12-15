@@ -54,10 +54,15 @@ public class FeignEnhancer extends BeforeEnhancer {
 			memberValues.setAccessible(true);
 			Map map = (Map) memberValues.get(invocationHandler);
 			Object value = map.get("value");
-			if (value instanceof String[]) {
-				String[] values = (String[]) value;
-				urlPath = values[0];
+			Object path = map.get("path");
+			String[] values = null;
+			if (path instanceof String[]) {
+				values = (String[]) path;
 			}
+			if (values.length == 0) {
+				values = (String[]) value;
+			}
+			urlPath = values[0];
 		}
 
 		String clientName = ReflectUtil.invokeMethod(proxy, "name");
