@@ -53,25 +53,20 @@ public class FeignEnhancer extends BeforeEnhancer {
 		Annotation[] declaredAnnotations = rootMethod.getDeclaredAnnotations();
 		if (declaredAnnotations != null && declaredAnnotations.length > 0) {
 			Annotation annotation = declaredAnnotations[0];
-			LOGGER.info("annotation s is {}", annotation.toString());
-			String annotationStr = annotation.toString();
-			Pattern pattern = Pattern.compile(REGEX);
-			Matcher m = pattern.matcher(annotationStr);
-			while (m.find()) {
-				urlPath = m.group(0);
+			InvocationHandler invocationHandler = Proxy.getInvocationHandler(annotation);
+			Field memberValues = invocationHandler.getClass().getDeclaredField("memberValues");
+			memberValues.setAccessible(true);
+			Map map = (Map) memberValues.get(invocationHandler);
+			Object value = map.get("value");
+			if (value instanceof String[]) {
+				String[] values = (String[]) value;
+				urlPath = values[0];
 			}
-			LOGGER.info("values is {}", urlPath);
-
-			InvocationHandler h = Proxy.getInvocationHandler(annotation);
-			Field hField = h.getClass().getDeclaredField("memberValues");
-			Map memberValues = (Map)hField.get(h);
-			String urlPath1 = memberValues.get("value").toString();
-			LOGGER.info("urlPath1 is {}", urlPath1);
 
 
 
 		}
-		LOGGER.info("urlPath {}, methodName {}, className", urlPath, methodName, methodClassName);
+		LOGGER.info("urlPath {}, methodName {}, className {}", urlPath, methodName, methodClassName);
 		Object type = ReflectUtil.invokeMethod(proxy, "type");
 		String simpleName = ReflectUtil.invokeMethod(type, "getName");
 		String name = ReflectUtil.invokeMethod(proxy, "name");
