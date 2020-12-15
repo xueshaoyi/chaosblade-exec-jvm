@@ -10,7 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,9 +52,23 @@ public class FeignEnhancer extends BeforeEnhancer {
 		String urlPath = null;
 		Annotation[] declaredAnnotations = rootMethod.getDeclaredAnnotations();
 		if (declaredAnnotations != null && declaredAnnotations.length > 0) {
-			Object annotation = declaredAnnotations[0];
-			urlPath = ReflectUtil.invokeMethod(annotation, "value");
-			LOGGER.info("annotation s is {}, value {}", annotation.toString(), urlPath);
+			Annotation annotation = declaredAnnotations[0];
+			LOGGER.info("annotation s is {}", annotation.toString());
+			String annotationStr = annotation.toString();
+			Pattern pattern = Pattern.compile(REGEX);
+			Matcher m = pattern.matcher(annotationStr);
+			while (m.find()) {
+				urlPath = m.group(0);
+			}
+			LOGGER.info("values is {}", urlPath);
+
+			InvocationHandler h = Proxy.getInvocationHandler(annotation);
+			Field hField = h.getClass().getDeclaredField("memberValues");
+			Map memberValues = (Map)hField.get(h);
+			String urlPath1 = memberValues.get("value").toString();
+			LOGGER.info("urlPath1 is {}", urlPath1);
+
+
 
 		}
 		LOGGER.info("urlPath {}, methodName {}, className", urlPath, methodName, methodClassName);
