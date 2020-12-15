@@ -7,8 +7,7 @@ package com.alibaba.chaosblade.exec.plugin.feign;
 public interface FeignConstant {
 	String TARGET_NAME = "feign";
 
-	String CLASS_MATCHER_NAME = "classname";
-	String METHOD_MATCHER_NAME = "methodname";
+	String CLIENT_MATCHER_NAME = "clientname";
 	String PATH_MATCHER_NAME = "path";
 
 }

@@ -30,7 +30,6 @@ public class FeignEnhancer extends BeforeEnhancer {
 	@Override
 	public EnhancerModel doBeforeAdvice(ClassLoader classLoader, String className, Object object, Method method,
 	                                    Object[] methodArguments) throws Exception {
-		LOGGER.info("doBefore method {}, object {}", method, object);
 		if (methodArguments == null || methodArguments.length != 3) {
 			LOGGER.info("The necessary parameters is null or length is not equal 3, {}",
 			            methodArguments != null ? methodArguments.length : null);
@@ -46,9 +45,6 @@ public class FeignEnhancer extends BeforeEnhancer {
 		}
 
 		Method rootMethod = ReflectUtil.invokeMethod(methodMethod, "getRoot");
-		LOGGER.info("feign root Method {}", rootMethod);
-		String methodName = rootMethod.getName();
-		String methodClassName = rootMethod.getClass().getSimpleName();
 		String urlPath = null;
 		Annotation[] declaredAnnotations = rootMethod.getDeclaredAnnotations();
 		if (declaredAnnotations != null && declaredAnnotations.length > 0) {
@@ -62,22 +58,13 @@ public class FeignEnhancer extends BeforeEnhancer {
 				String[] values = (String[]) value;
 				urlPath = values[0];
 			}
-
-
-
 		}
-		LOGGER.info("urlPath {}, methodName {}, className {}", urlPath, methodName, methodClassName);
-		Object type = ReflectUtil.invokeMethod(proxy, "type");
-		String simpleName = ReflectUtil.invokeMethod(type, "getName");
-		String name = ReflectUtil.invokeMethod(proxy, "name");
-		String url = ReflectUtil.invokeMethod(proxy, "url");
-		LOGGER.info("simpleName {}, name {}, url {}",simpleName, name, url);
+
+		String clientName = ReflectUtil.invokeMethod(proxy, "name");
+		LOGGER.info("project aop clientName {}, urlPath {}", clientName, urlPath);
 		MatcherModel matcherModel = new MatcherModel();
-		if (StringUtils.isNotEmpty(methodName)) {
-			matcherModel.add(FeignConstant.METHOD_MATCHER_NAME, methodName.toLowerCase());
-		}
-		if (StringUtils.isNotEmpty(methodClassName)) {
-			matcherModel.add(FeignConstant.CLASS_MATCHER_NAME, methodClassName);
+		if (StringUtils.isNotEmpty(clientName)) {
+			matcherModel.add(FeignConstant.CLIENT_MATCHER_NAME, clientName.toLowerCase());
 		}
 		if (StringUtils.isNotEmpty(urlPath)) {
 			matcherModel.add(FeignConstant.PATH_MATCHER_NAME, urlPath);
