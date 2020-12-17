@@ -36,34 +36,12 @@ public class FeignEnhancer extends BeforeEnhancer {
 			return null;
 		}
 		Object proxy = ReflectUtil.getFieldValue(object, "target", true);
-		Object methodMethod = methodArguments[1];
-		boolean isMethod = ReflectUtil.isAssignableFrom(classLoader, methodMethod.getClass(),
-		                                                           "java.lang.reflect.Method");
-		if (!isMethod) {
-			LOGGER.info("methodArguments 2 is not method error {}", methodArguments);
-			return null;
-		}
+		Object metaData = ReflectUtil.getFieldValue(object, "metadata", true);
+		Object temp = ReflectUtil.getFieldValue(metaData, "template", true);
+		Object uriTemplate = ReflectUtil.getFieldValue(temp, "uriTemplate", true);
+		Object template = ReflectUtil.getFieldValue(uriTemplate, "template", true);
 
-		Method rootMethod = ReflectUtil.invokeMethod(methodMethod, "getRoot");
-		String urlPath = null;
-		Annotation[] declaredAnnotations = rootMethod.getDeclaredAnnotations();
-		if (declaredAnnotations != null && declaredAnnotations.length > 0) {
-			Annotation annotation = declaredAnnotations[0];
-			InvocationHandler invocationHandler = Proxy.getInvocationHandler(annotation);
-			Field memberValues = invocationHandler.getClass().getDeclaredField("memberValues");
-			memberValues.setAccessible(true);
-			Map map = (Map) memberValues.get(invocationHandler);
-			Object value = map.get("value");
-			Object path = map.get("path");
-			String[] values = null;
-			if (path instanceof String[]) {
-				values = (String[]) path;
-			}
-			if (values.length == 0) {
-				values = (String[]) value;
-			}
-			urlPath = values[0];
-		}
+		String urlPath = (String)template;
 
 		String clientName = ReflectUtil.invokeMethod(proxy, "name");
 		LOGGER.info("project aop clientName {}, urlPath {}", clientName, urlPath);

@@ -11,7 +11,7 @@ import com.alibaba.chaosblade.exec.common.aop.matcher.method.NameMethodMatcher;
  * @Date 2020/12/14 下午4:21
  **/
 public class FeignPointCut implements PointCut {
-	private static final String FEIGN_EXEC = "feign.hystrix.HystrixInvocationHandler";
+	private static final String FEIGN_EXEC = "feign.SynchronousMethodHandler";
 	private static final String INTERCEPTOR_PRE_METHOD = "invoke";
 
 	@Override
