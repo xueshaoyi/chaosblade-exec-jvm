@@ -32,11 +32,8 @@ public class FeignEnhancer extends BeforeEnhancer {
 	                                    Object[] methodArguments) throws Exception {
 		Object proxy = ReflectUtil.getFieldValue(object, "target", true);
 		Object metaData = ReflectUtil.getFieldValue(object, "metadata", true);
-		LOGGER.info("project aop metaData {}", metaData);
 		Object temp = ReflectUtil.getFieldValue(metaData, "template", true);
-		LOGGER.info("project aop temp {}", temp);
 		Object uriTemplate = ReflectUtil.getFieldValue(temp, "uriTemplate", true);
-		LOGGER.info("project aop uriTemplate {}", uriTemplate);
 
 		String urlPath = uriTemplate.toString();
 
