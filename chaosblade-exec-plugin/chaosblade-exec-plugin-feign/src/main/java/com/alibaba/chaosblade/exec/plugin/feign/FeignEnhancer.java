@@ -37,10 +37,8 @@ public class FeignEnhancer extends BeforeEnhancer {
 		LOGGER.info("project aop temp {}", temp);
 		Object uriTemplate = ReflectUtil.getFieldValue(temp, "uriTemplate", true);
 		LOGGER.info("project aop uriTemplate {}", uriTemplate);
-		Object template = ReflectUtil.getFieldValue(uriTemplate, "template", true);
-		LOGGER.info("project aop template {}", template);
 
-		String urlPath = (String)template;
+		String urlPath = uriTemplate.toString();
 
 		String clientName = ReflectUtil.invokeMethod(proxy, "name");
 		LOGGER.info("project aop clientName {}, urlPath {}", clientName, urlPath);
