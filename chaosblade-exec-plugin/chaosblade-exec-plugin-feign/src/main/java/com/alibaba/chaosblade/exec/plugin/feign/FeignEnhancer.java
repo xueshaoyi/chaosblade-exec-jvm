@@ -30,11 +30,6 @@ public class FeignEnhancer extends BeforeEnhancer {
 	@Override
 	public EnhancerModel doBeforeAdvice(ClassLoader classLoader, String className, Object object, Method method,
 	                                    Object[] methodArguments) throws Exception {
-		if (methodArguments == null || methodArguments.length != 3) {
-			LOGGER.info("The necessary parameters is null or length is not equal 3, {}",
-			            methodArguments != null ? methodArguments.length : null);
-			return null;
-		}
 		Object proxy = ReflectUtil.getFieldValue(object, "target", true);
 		Object metaData = ReflectUtil.getFieldValue(object, "metadata", true);
 		Object temp = ReflectUtil.getFieldValue(metaData, "template", true);
