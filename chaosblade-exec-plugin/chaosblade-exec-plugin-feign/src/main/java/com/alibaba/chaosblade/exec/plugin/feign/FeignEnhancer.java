@@ -39,9 +39,12 @@ public class FeignEnhancer extends BeforeEnhancer {
 
 		String clientName = ReflectUtil.invokeMethod(proxy, "name");
 		String url = ReflectUtil.invokeMethod(proxy, "url");
-		String[] paths = url.split(clientName);
+		String[] paths = url.split("//");
 		if (paths.length == 2) {
-			urlPath = paths[1] + urlPath;
+			String[] urlPaths = paths[1].split("/",2);
+			if (urlPaths.length == 2) {
+				urlPath = "/" + urlPaths[1] + urlPath;
+			}
 		}
 		LOGGER.info("project aop clientName {}, urlPath {}", clientName, urlPath);
 		MatcherModel matcherModel = new MatcherModel();
