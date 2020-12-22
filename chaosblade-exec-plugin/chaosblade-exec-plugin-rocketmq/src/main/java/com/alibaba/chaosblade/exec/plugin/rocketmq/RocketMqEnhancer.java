@@ -39,10 +39,6 @@ public class RocketMqEnhancer extends BeforeEnhancer implements RocketMqConstant
     public static String CLASS_REMOTEING_COMMAND_CLASS_APACHE
         = "org.apache.rocketmq.remoting.protocol.RemotingCommand";
 
-    public static String CLASS_CLIENT_API_CLASS_ALIBABA
-            ="org.alibaba.rocketmq.remoting.InvokeCallback";
-    public static String CLASS_CLIENT_API_CLASS_APACHE
-            ="org.apache.rocketmq.remoting.InvokeCallback";
     private static String FIELD_CUSTOM_HEADER = "customHeader";
 
     @Override
@@ -50,13 +46,10 @@ public class RocketMqEnhancer extends BeforeEnhancer implements RocketMqConstant
                                         Object[] methodArguments) throws Exception {
         MatcherModel matcherModel = new MatcherModel();
         String remotingCommandClassName = CLASS_REMOTEING_COMMAND_CLASS_ALIBABA;
-        String invokeCallbackClassName = CLASS_CLIENT_API_CLASS_ALIBABA;
         if (isApache(className)) {
             remotingCommandClassName = CLASS_REMOTEING_COMMAND_CLASS_APACHE;
-            invokeCallbackClassName = CLASS_CLIENT_API_CLASS_APACHE;
         }
         Object remoteingCommnadRequest = selectParamByClassName(classLoader, methodArguments, remotingCommandClassName);
-        Object invokeCallback = selectParamByClassName(classLoader, methodArguments, invokeCallbackClassName);
 
         if (remoteingCommnadRequest == null) {
             return new EnhancerModel(classLoader, matcherModel);
@@ -72,36 +65,12 @@ public class RocketMqEnhancer extends BeforeEnhancer implements RocketMqConstant
             if (isPullMessageHeader(classLoader, header, className)) {
                 topic = ReflectUtil.getFieldValue(header, FLAG_NAME_TOPIC, false);
                 consumerGroup = ReflectUtil.getFieldValue(header, FLAG_CONSUMER_GROUP, false);
-                if (invokeCallback != null){
-                    LOGGER.info("invokeCallBack {}", invokeCallback);
-                    Object pullCallback = ReflectUtil.getFieldValue(invokeCallback, "pullCallback", false);
-                    Object pullCall = ReflectUtil.getSuperclassFieldValue(invokeCallback, "pullCallback", false);
-                    Object pullCallback1 = ReflectUtil.invokeMethod(invokeCallback, "getPullCallback");
-                    LOGGER.info("pullCallback {} {}, {}", pullCallback, pullCall, pullCallback1);
-                    Object subscriptionData = ReflectUtil.getFieldValue(pullCallback, "subscriptionData", false);
-                    Object subString = ReflectUtil.getFieldValue(subscriptionData, "subString", false);
-                    LOGGER.info("subString ", subString.toString());
-
-
-                }
             } else if (isSendMessageHeader(classLoader, header, className)) {
                 topic = ReflectUtil.getFieldValue(header, FLAG_NAME_TOPIC, false);
                 producerGroup = ReflectUtil.getFieldValue(header, FLAG_PRODUCER_GROUP, false);
             } else if (isSendMessageHeaderV2(classLoader, header, className)) {
                 topic = ReflectUtil.getFieldValue(header, "b", false);
                 producerGroup = ReflectUtil.getFieldValue(header, "a", false);
-                String tag = ReflectUtil.getFieldValue(header, "i", false);
-                if (tag.contains("TAGS")) {
-                    String[] s = tag.split(" ");
-                    for (String head : s) {
-                        if (head.contains("TAGS")) {
-                            String[] tags1 = head.split("TAGS");
-                            if (tags1.length > 1) {
-                                tags = tags1[1];
-                            }
-                        }
-                    }
-                }
             }
             LOGGER.info("rocket mq topic {}, consumerGroup {}, producerGroup {}, tags {}", topic, consumerGroup, producerGroup, tags);
             matcherModel.add(FLAG_NAME_TOPIC, topic);
