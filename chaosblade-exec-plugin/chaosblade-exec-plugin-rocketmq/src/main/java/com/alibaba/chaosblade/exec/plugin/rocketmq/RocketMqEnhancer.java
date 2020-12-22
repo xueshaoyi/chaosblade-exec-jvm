@@ -76,6 +76,10 @@ public class RocketMqEnhancer extends BeforeEnhancer implements RocketMqConstant
                     LOGGER.info("invokeCallBack {}", invokeCallback);
                     Object pullCallback = ReflectUtil.getFieldValue(invokeCallback, "pullCallback", false);
                     LOGGER.info("pullCallback {}", pullCallback);
+                    Object subscriptionData = ReflectUtil.getFieldValue(pullCallback, "subscriptionData", false);
+                    Object subString = ReflectUtil.getFieldValue(subscriptionData, "subString", false);
+                    LOGGER.info("subString ", subString.toString());
+
 
                 }
             } else if (isSendMessageHeader(classLoader, header, className)) {
