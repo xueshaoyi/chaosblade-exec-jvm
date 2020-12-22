@@ -40,9 +40,9 @@ public class RocketMqEnhancer extends BeforeEnhancer implements RocketMqConstant
         = "org.apache.rocketmq.remoting.protocol.RemotingCommand";
 
     public static String CLASS_CLIENT_API_CLASS_ALIBABA
-            ="org.alibaba.rocketmq.client.impl.MQClientAPIImpl";
+            ="org.alibaba.rocketmq.remoting.InvokeCallback";
     public static String CLASS_CLIENT_API_CLASS_APACHE
-            ="org.apache.rocketmq.client.impl.MQClientAPIImpl";
+            ="org.apache.rocketmq.remoting.InvokeCallback";
     private static String FIELD_CUSTOM_HEADER = "customHeader";
 
     @Override
