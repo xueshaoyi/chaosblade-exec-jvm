@@ -26,6 +26,4 @@ public interface RocketMqConstant {
 
     public static String FLAG_CONSUMER_GROUP = "consumerGroup";
 
-    public static String FLAG_TAGS = "tags";
-
 }

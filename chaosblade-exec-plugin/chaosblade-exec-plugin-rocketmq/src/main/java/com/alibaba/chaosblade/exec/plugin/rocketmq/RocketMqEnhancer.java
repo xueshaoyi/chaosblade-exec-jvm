@@ -61,7 +61,6 @@ public class RocketMqEnhancer extends BeforeEnhancer implements RocketMqConstant
             String topic = null;
             String consumerGroup = null;
             String producerGroup = null;
-            String tags = null;
             if (isPullMessageHeader(classLoader, header, className)) {
                 topic = ReflectUtil.getFieldValue(header, FLAG_NAME_TOPIC, false);
                 consumerGroup = ReflectUtil.getFieldValue(header, FLAG_CONSUMER_GROUP, false);
@@ -72,11 +71,9 @@ public class RocketMqEnhancer extends BeforeEnhancer implements RocketMqConstant
                 topic = ReflectUtil.getFieldValue(header, "b", false);
                 producerGroup = ReflectUtil.getFieldValue(header, "a", false);
             }
-            LOGGER.info("rocket mq topic {}, consumerGroup {}, producerGroup {}, tags {}", topic, consumerGroup, producerGroup, tags);
             matcherModel.add(FLAG_NAME_TOPIC, topic);
             matcherModel.add(FLAG_CONSUMER_GROUP, consumerGroup);
             matcherModel.add(FLAG_PRODUCER_GROUP, producerGroup);
-            matcherModel.add(FLAG_TAGS, tags);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("rocketmq matchers: {}", JsonUtil.writer().writeValueAsString(matcherModel));
             }

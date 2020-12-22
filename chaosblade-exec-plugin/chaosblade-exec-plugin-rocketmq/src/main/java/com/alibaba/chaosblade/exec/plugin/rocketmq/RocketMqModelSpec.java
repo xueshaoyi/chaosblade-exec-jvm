@@ -41,7 +41,6 @@ public class RocketMqModelSpec extends FrameworkModelSpec implements RocketMqCon
         arrayList.add(new ConsumerGroupMatcherSpec());
         arrayList.add(new ProducerGroupMatcherSpec());
         arrayList.add(new TopicMatcherSpec());
-        arrayList.add(new TagsMatcherSpec());
         return arrayList;
     }
 
