@@ -25,6 +25,6 @@ public class TagsMatcherSpec extends BasePredicateMatcherSpec implements RocketM
 
     @Override
     public boolean required() {
-        return true;
+        return false;
     }
 }
