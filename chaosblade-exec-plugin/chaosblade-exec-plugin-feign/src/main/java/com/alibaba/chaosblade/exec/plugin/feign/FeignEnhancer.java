@@ -55,7 +55,7 @@ public class FeignEnhancer extends BeforeEnhancer {
 			matcherModel.add(FeignConstant.PATH_MATCHER_NAME, urlPath);
 		}
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("redisson matchers: {}", JsonUtil.writer().writeValueAsString(matcherModel));
+			LOGGER.debug("feign matchers: {}", JsonUtil.writer().writeValueAsString(matcherModel));
 		}
 		return new EnhancerModel(classLoader, matcherModel);
 	}
