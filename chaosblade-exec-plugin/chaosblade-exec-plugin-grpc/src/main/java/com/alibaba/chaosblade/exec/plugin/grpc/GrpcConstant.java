@@ -8,5 +8,5 @@ public interface GrpcConstant {
 	String TARGET_NAME = "grpc";
 
 	String CLASS_MATCHER_NAME = "classname";
-	String METHOD_MATCHER_NAME = "method";
+	String METHOD_MATCHER_NAME = "methodname";
 }
