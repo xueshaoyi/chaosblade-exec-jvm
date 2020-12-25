@@ -27,7 +27,6 @@ public class GrpcEnhancer extends BeforeEnhancer {
 		}
 		Object methodDescriptor = methodArguments[1];
 		String getFullMethodName = ReflectUtil.invokeMethod(methodDescriptor, "getFullMethodName");
-		LOGGER.info("getFullMethodName : {}", getFullMethodName);
 		String[] classMethod = getFullMethodName.split("/");
 		String classname = null;
 		String methodName = null;
