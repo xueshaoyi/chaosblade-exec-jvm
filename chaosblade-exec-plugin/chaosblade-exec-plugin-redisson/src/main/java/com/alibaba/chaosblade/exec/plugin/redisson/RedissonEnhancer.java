@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author xueshaoyi
@@ -46,6 +48,19 @@ public class RedissonEnhancer extends BeforeEnhancer {
 			return null;
 		}
 		LOGGER.info("method Arguments {}", methodArguments.toString());
+		try {
+			Object objectBuilder = ReflectUtil.getFieldValue(object, "objectBuilder", true);
+			Object redisson = ReflectUtil.getFieldValue(objectBuilder, "redisson", true);
+			Object connectionManager = ReflectUtil.getFieldValue(redisson, "connectionManager", true);
+			Object subscribeService = ReflectUtil.getFieldValue(connectionManager, "subscribeService", true);
+			Object config = ReflectUtil.getFieldValue(subscribeService, "config", true);
+			Object masterAddress = ReflectUtil.getFieldValue(config, "masterAddress", true);
+			Object slaveAddresses = ReflectUtil.getFieldValue(config, "slaveAddresses", true);
+			Set<String> slaveAddressesSet = (HashSet<String>) slaveAddresses;
+			LOGGER.info("redisson masterAddress {} slaveAddress {}", String.valueOf(masterAddress), slaveAddressesSet.size());
+		} catch (Exception e) {
+			LOGGER.info("redisson address error {}", e);
+		}
 
 
 		Object command = methodArguments[3];
@@ -73,12 +88,12 @@ public class RedissonEnhancer extends BeforeEnhancer {
 		if (cmd != null) {
 			matcherModel.add(RedissonConstant.COMMAND_TYPE_MATCHER_NAME, cmd.toLowerCase());
 		}
-		if (key != null) {
-			matcherModel.add(RedissonConstant.KEY_MATCHER_NAME, key);
-		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("redisson matchers: {}", JsonUtil.writer().writeValueAsString(matcherModel));
 		}
-		return new EnhancerModel(classLoader, matcherModel);
+		EnhancerModel enhancerModel = new EnhancerModel(classLoader, matcherModel);
+		enhancerModel.addCustomMatcher(RedissonConstant.KEY_MATCHER_NAME, key,
+		                               RedissonParamsMatcher.getInstance());
+		return enhancerModel;
 	}
 }
