@@ -27,19 +27,22 @@ import java.util.regex.Pattern;
  * @author xsy
  * @date 2021-03-08 11:31 上午
  */
-public class RedissonParamsMatcher implements CustomMatcher {
+public class RedissonKeyMatcher implements CustomMatcher {
 
-    public static final Logger logger = LoggerFactory.getLogger(RedissonParamsMatcher.class);
+    public static final Logger logger = LoggerFactory.getLogger(RedissonKeyMatcher.class);
 
-    public static final RedissonParamsMatcher CALL_BACK = new RedissonParamsMatcher();
+    public static final RedissonKeyMatcher CALL_BACK = new RedissonKeyMatcher();
 
-    public static  RedissonParamsMatcher getInstance() {
+    public static RedissonKeyMatcher getInstance() {
         return CALL_BACK;
     }
 
 
     @Override
     public boolean match(String commandValue, Object originValue) {
+        if (commandValue.contains("*")) {
+            commandValue = commandValue.replace("*", ".*");
+        }
         Pattern redissonPattern = Pattern.compile(commandValue);
 
         Matcher redissonMatcher = redissonPattern.matcher(String.valueOf(originValue));

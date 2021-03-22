@@ -30,7 +30,7 @@ public class RedissonKeyMatcherSpec extends BasePredicateMatcherSpec {
 
     @Override
     public String getDesc() {
-        return "The key which command used";
+        return "The key which command used, can use matcher";
     }
 
     @Override

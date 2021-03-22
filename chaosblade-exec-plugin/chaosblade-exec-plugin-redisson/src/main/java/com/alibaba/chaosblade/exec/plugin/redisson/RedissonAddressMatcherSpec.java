@@ -16,15 +16,30 @@
 
 package com.alibaba.chaosblade.exec.plugin.redisson;
 
+import com.alibaba.chaosblade.exec.common.model.matcher.BasePredicateMatcherSpec;
+
 /**
  * @author xueshaoyi
  * @Date 2020/11/23 上午11:36
  **/
-public interface RedissonConstant {
+public class RedissonAddressMatcherSpec extends BasePredicateMatcherSpec {
+    @Override
+    public String getName() {
+        return RedissonConstant.ADDRESS_MATCHER_NAME;
+    }
 
-	String TARGET_NAME = "redisson";
+    @Override
+    public String getDesc() {
+        return "The address which master or salve";
+    }
 
-	String KEY_MATCHER_NAME = "key";
-	String COMMAND_TYPE_MATCHER_NAME = "cmd";
-	String ADDRESS_MATCHER_NAME = "address";
+    @Override
+    public boolean noArgs() {
+        return false;
+    }
+
+    @Override
+    public boolean required() {
+        return false;
+    }
 }

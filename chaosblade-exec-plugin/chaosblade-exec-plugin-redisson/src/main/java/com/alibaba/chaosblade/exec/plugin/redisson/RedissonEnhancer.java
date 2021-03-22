@@ -48,15 +48,18 @@ public class RedissonEnhancer extends BeforeEnhancer {
 			return null;
 		}
 		LOGGER.info("method Arguments {}", methodArguments.toString());
+		Set<String> addressSet = new HashSet<String>();
 		try {
-			Object objectBuilder = ReflectUtil.getFieldValue(object, "objectBuilder", true);
+			Object objectBuilder = ReflectUtil.invokeMethod(object, "getObjectBuilder");
 			Object redisson = ReflectUtil.getFieldValue(objectBuilder, "redisson", true);
-			Object connectionManager = ReflectUtil.getFieldValue(redisson, "connectionManager", true);
-			Object subscribeService = ReflectUtil.getFieldValue(connectionManager, "subscribeService", true);
+			Object connectionManager = ReflectUtil.invokeMethod(redisson, "getConnectionManager");
+			Object subscribeService = ReflectUtil.invokeMethod(connectionManager, "getSubscribeService");
 			Object config = ReflectUtil.getFieldValue(subscribeService, "config", true);
-			Object masterAddress = ReflectUtil.getFieldValue(config, "masterAddress", true);
-			Object slaveAddresses = ReflectUtil.getFieldValue(config, "slaveAddresses", true);
+			Object masterAddress = ReflectUtil.invokeMethod(config, "getMasterAddress");
+			Object slaveAddresses = ReflectUtil.invokeMethod(config, "getSlaveAddresses");
 			Set<String> slaveAddressesSet = (HashSet<String>) slaveAddresses;
+			addressSet.addAll(slaveAddressesSet);
+			addressSet.add(masterAddress.toString());
 			LOGGER.info("redisson masterAddress {} slaveAddress {}", String.valueOf(masterAddress), slaveAddressesSet.size());
 		} catch (Exception e) {
 			LOGGER.info("redisson address error {}", e);
@@ -93,7 +96,9 @@ public class RedissonEnhancer extends BeforeEnhancer {
 		}
 		EnhancerModel enhancerModel = new EnhancerModel(classLoader, matcherModel);
 		enhancerModel.addCustomMatcher(RedissonConstant.KEY_MATCHER_NAME, key,
-		                               RedissonParamsMatcher.getInstance());
+		                               RedissonKeyMatcher.getInstance());
+		enhancerModel.addCustomMatcher(RedissonConstant.ADDRESS_MATCHER_NAME, addressSet,
+		                               RedissonAddressMatcher.getInstance());
 		return enhancerModel;
 	}
 }
