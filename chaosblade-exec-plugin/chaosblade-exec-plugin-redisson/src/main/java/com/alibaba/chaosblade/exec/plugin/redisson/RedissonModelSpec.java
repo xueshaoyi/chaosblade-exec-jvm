@@ -59,6 +59,7 @@ public class RedissonModelSpec extends FrameworkModelSpec {
         ArrayList<MatcherSpec> matcherSpecs = new ArrayList<MatcherSpec>();
         matcherSpecs.add(new RedissonCmdTypeMatcherSpec());
         matcherSpecs.add(new RedissonKeyMatcherSpec());
+        matcherSpecs.add(new RedissonAddressMatcherSpec());
         return matcherSpecs;
     }
 
